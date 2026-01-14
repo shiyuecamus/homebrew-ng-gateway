@@ -1,4 +1,4 @@
-# ng-gateway-homebrew
+# homebrew-ng-gateway
 
 Homebrew tap for ng-gateway.
 
