@@ -9,12 +9,12 @@ class NgGateway < Formula
   on_macos do
     on_arm do
       url "https://github.com/shiyuecamus/ng-gateway/releases/download/v0.1.0/ng-gateway-v0.1.0-darwin-arm64.tar.gz"
-      sha256 "94b73ff57ffdfa89722002ff2dc00734685ff09b67d928d6ad0ede751f642656"
+      sha256 "a75071bdc9b72e4d0692f9573ac1fa7a85c5156df8e5399c2a455352015479b5"
     end
 
     on_intel do
       url "https://github.com/shiyuecamus/ng-gateway/releases/download/v0.1.0/ng-gateway-v0.1.0-darwin-amd64.tar.gz"
-      sha256 "34b7a07e5c7710e4d01a11801cf3b08cd9049d5200176ce93893df80c2fc4818"
+      sha256 "2f7ca18df49f78f465a07f2ab3384611212c47c57ada9b67868a47e1ecf7843e"
     end
   end
 
@@ -23,8 +23,15 @@ class NgGateway < Formula
   #   runtime artifacts (db/drivers/plugins/certs) work as-is.
   # - A wrapper script in bin/ `cd`s into the runtime dir before launching.
   def install
-    pkg_root = "ng-gateway-#{version}-darwin-#{Hardware::CPU.arm? ? "arm64" : "amd64"}"
-    libexec.install Dir["#{pkg_root}/*"]
+    # Packaging contract (Scheme A):
+    # - The tarball MUST contain exactly one top-level directory.
+    # - Homebrew MUST stage into that directory so buildpath contains:
+    #   - gateway.toml
+    #   - bin/ng-gateway-bin
+    odie "Invalid tarball layout: missing gateway.toml or bin/ng-gateway-bin in buildpath" unless
+      (buildpath/"gateway.toml").exist? && (buildpath/"bin/ng-gateway-bin").exist?
+
+    libexec.install Dir["*"]
 
     runtime_dir = var/"lib/ng-gateway"
     runtime_dir.mkpath
@@ -55,7 +62,8 @@ class NgGateway < Formula
       #!/bin/bash
       set -euo pipefail
       cd "#{runtime_dir}"
-      exec "#{libexec}/bin/ng-gateway-bin" --config "#{runtime_dir}/gateway.toml"
+      # Forward user-provided args (e.g. --help/--version) to the real binary.
+      exec "#{libexec}/bin/ng-gateway-bin" --config "#{runtime_dir}/gateway.toml" "$@"
     EOS
     chmod 0755, bin/"ng-gateway"
   end
@@ -66,6 +74,51 @@ class NgGateway < Formula
     working_dir var/"lib/ng-gateway"
     log_path var/"log/ng-gateway.log"
     error_log_path var/"log/ng-gateway.error.log"
+  end
+
+  def caveats
+    runtime_dir = var/"lib/ng-gateway"
+    <<~EOS
+      NG Gateway has been installed.
+
+      Runtime directory (working directory):
+        #{runtime_dir}
+
+      Edit configuration:
+        #{runtime_dir}/gateway.toml
+
+      Runtime sub-directories (default layout):
+        - data:    #{runtime_dir}/data
+        - drivers: #{runtime_dir}/drivers
+        - plugins: #{runtime_dir}/plugins
+        - certs:   #{runtime_dir}/certs
+        - pki:     #{runtime_dir}/pki
+
+      Logs:
+        - stdout: #{var}/log/ng-gateway.log
+        - stderr: #{var}/log/ng-gateway.error.log
+
+      Start/Stop/Status (recommended: run as a background service):
+        brew services start ng-gateway
+        brew services list
+        brew services restart ng-gateway
+        brew services stop ng-gateway
+
+      Health checks:
+        - HTTP:  curl -fsS http://127.0.0.1:8978/health   # -> OK
+        - HTTPS: curl -kfsS https://127.0.0.1:8979/health # if enabled (self-signed: -k)
+
+      Web access (defaults, if UI is enabled in gateway.toml):
+        - UI:  http://127.0.0.1:8978/
+        - API: http://127.0.0.1:8978/api
+
+      Default UI credentials (initial):
+        - username: system_admin
+        - password: system_admin
+
+      After editing gateway.toml, restart the service:
+        brew services restart ng-gateway
+    EOS
   end
 
   test do
