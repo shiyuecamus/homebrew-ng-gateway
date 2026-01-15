@@ -9,12 +9,12 @@ class NgGateway < Formula
   on_macos do
     on_arm do
       url "https://github.com/shiyuecamus/ng-gateway/releases/download/v0.1.1/ng-gateway-v0.1.1-darwin-arm64.tar.gz"
-      sha256 "371ce45e8fa2ea1fc8078d6e8005250d67c82c92b958967e3e982c15b84b4589"
+      sha256 "e8b425e20b832e539975c5a4b4e59ea00aa75946036e62058b57843b15366335"
     end
 
     on_intel do
       url "https://github.com/shiyuecamus/ng-gateway/releases/download/v0.1.1/ng-gateway-v0.1.1-darwin-amd64.tar.gz"
-      sha256 "2ddf8e66236baa3cab394716b49dd2de8111b4749563ae0cb37848d3e0f52a86"
+      sha256 "52fd48826efaa25a4e2f3b7cfa4b364cc649d231e7a7075cdce8f7da415dca30"
     end
   end
 
