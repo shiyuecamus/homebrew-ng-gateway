@@ -4,17 +4,17 @@ class NgGateway < Formula
   license "Apache-2.0"
 
   # Release version (used in logs/service name only)
-  version "v0.1.2"
+  version "v0.1.3"
 
   on_macos do
     on_arm do
-      url "https://github.com/shiyuecamus/ng-gateway/releases/download/v0.1.2/ng-gateway-v0.1.2-darwin-arm64.tar.gz"
-      sha256 "2ff2d7f6bf23a2716f0d88444e2a160f9dbacbe6061a52afdcf8bac74649bb1b"
+      url "https://github.com/shiyuecamus/ng-gateway/releases/download/v0.1.3/ng-gateway-v0.1.3-darwin-arm64.tar.gz"
+      sha256 "3ff08d1be14e11bb7bc41a855b0ba37ca3f8a3551a52250bb6688396eced2764"
     end
 
     on_intel do
-      url "https://github.com/shiyuecamus/ng-gateway/releases/download/v0.1.2/ng-gateway-v0.1.2-darwin-amd64.tar.gz"
-      sha256 "3485f06dcd3c466b75ee84c37254bb270ad18cbef89151f6a0cd5534a52cf6fd"
+      url "https://github.com/shiyuecamus/ng-gateway/releases/download/v0.1.3/ng-gateway-v0.1.3-darwin-amd64.tar.gz"
+      sha256 "f12987beef4f9072be7afb4a65fc368bb716b45f2d1bb0cf04c538b9c93365ca"
     end
   end
 
